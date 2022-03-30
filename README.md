@@ -6,3 +6,5 @@ Integrantes :
 -Luis Mario Escobar Rosales 
 
 -Gisel Maite Díaz Tinoco
+
+-Israel Villanueva Garcia
