@@ -1,7 +1,21 @@
 module EAB where
 
-data EAB = Exp -- Definir la sintaxis abstracta de nuestro lenguaje EAB
-
+data EAB = Var String 
+        | Num Int 
+        | Bool Bool
+        | Sum EAB EAB
+        | Prod EAB EAB
+        | Neg EAB
+        | Pred EAB
+        | Suc EAB
+        | And EAB EAB 
+        | Or EAB EAB
+        | Not EAB
+        | Iszero EAB
+        | If EAB EAB EAB
+        | Let EAB EAB EAB 
+        | Abs String EAB deriving (Show)
+        
 eval1 :: EAB -> EAB
 eval1 _ = error "Implementar"
 
