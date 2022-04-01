@@ -67,7 +67,9 @@ eval1 (Let e1 (Abs x e2))= eval1 (subs e2 (x, e1))
 eval1 (Abs s e) = eval1 (subs e s) -- ¿Estaria bien?
 
 evals :: EAB -> EAB
-evals _ = error "Implementar"
+evals (Var x) = error "Variable libre"
+evals (Num n) = n
+evals (Bool b)= b
 
 eval :: EAB -> EAB
 eval _ = error "Implementar"
