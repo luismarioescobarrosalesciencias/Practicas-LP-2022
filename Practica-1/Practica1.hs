@@ -1,7 +1,7 @@
 module EAB where
 
 data EAB = Var String 
-        | Num Int 
+        | Num Int
         | Bool Bool
         | Sum EAB EAB
         | Prod EAB EAB
@@ -59,7 +59,10 @@ eval1 (Or a b) = eval1 a || eval1 b
 eval1 (Iszero n) = if eval1 n ==0
                    then true 
                    else false 
-eval1 (If a b c) = -- ???
+eval1 (If a b c) = case a of
+                    (i) -> If(eval1(i) b c)
+                    (Bool (True))  -> b    
+                    (Bool (False)) -> c    
 eval1 (Let e1 (Abs x e2))= eval1 (subs e2 (x, e1))
 eval1 (Abs s e) = -- ???
 
