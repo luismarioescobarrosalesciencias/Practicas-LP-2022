@@ -64,7 +64,7 @@ eval1 (If a b c) = case a of
                     (True)  -> b    
                     (False) -> c    
 eval1 (Let e1 (Abs x e2))= eval1 (subs e2 (x, e1))
-eval1 (Abs s e) = -- ???
+eval1 (Abs s e) = eval1 (subs e s) -- ¿Estaria bien?
 
 evals :: EAB -> EAB
 evals _ = error "Implementar"
