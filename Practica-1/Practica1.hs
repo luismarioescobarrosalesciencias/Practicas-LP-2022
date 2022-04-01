@@ -72,8 +72,9 @@ evals _ = error "Implementar"
 eval :: EAB -> EAB
 eval _ = error "Implementar"
 
-data Type = () -- Definir los tipos de EAB
-type Ctx = () -- Definir un sinomo para los contextos
+data Type = TypeN -- Para Numeros
+           |TypeB  -- Para Booleanos
+type Ctx = [(String,Type)] -- [("y", TypeN)] para contextos.
 
 vt :: Ctx -> EAB -> Type -> Bool
 vt _ _ _ = error "Implementar"
