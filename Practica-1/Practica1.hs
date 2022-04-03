@@ -24,12 +24,13 @@ fv (Num _) = []
 fv (Bool b)= []
 fv (Sum a b) = fv a ++ fv b
 fv (Prod a b) = fv a ++ fv b
-fv (Neg _) = []
-fv (Pred _) = []
-fv (Suc _) = []
-fv (And a b) = []
-fv (Or a b) = []
-fv (Iszero n) = []
+fv (Neg a) = fv a
+fv (Pred a) = fv a
+fv (Suc a) = fv a 
+fv (And a b) = fv a ++ fv b
+fv (Or a b) = fv a ++ fv b
+fv (Iszero n) = fv n
+fv (If a1 a2 a3) = fv a1 ++ fv a2 ++ fv a3
 fv (Let a1 a2) = fv a1 ++ fv a2
 fv (Abs x a1) = filter (/= x) (fv a1)
 
