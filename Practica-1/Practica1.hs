@@ -83,16 +83,16 @@ eval1 (Not a) = case a of
 eval1 (And a b) = case (a, b) of
                 (Bool True, Bool True) -> Bool True
                 (Bool False, Bool False) -> Bool False
-                (Bool False, c) -> Bool False
-                (c, Bool False) -> Bool False
+                (Bool False, c) -> And (Bool False) (eval1 c)
+                (c, Bool False) -> And (eval1 c) (Bool False)
                 (Bool True, c) -> And (Bool True) (eval1 c)
                 (c, Bool True) -> And (eval1 c) (Bool True)
                 (c, d) -> And (eval1 c) (eval1 d)
 eval1 (Or a b) = case (a, b) of
                 (Bool True, Bool True) -> Bool True
                 (Bool False, Bool False) -> Bool False
-                (Bool True, c) -> Bool True
-                (c, Bool True) -> Bool True
+                (Bool True, c) -> Or (Bool True) (eval1 c)
+                (c, Bool True) -> Or (eval1 c) (Bool True)
                 (Bool False, c) -> Or (Bool False) (eval1 c)
                 (c, Bool False) -> Or (eval1 c) (Bool False)
                 (c, d) -> Or (eval1 c) (eval1 d)
@@ -113,9 +113,67 @@ eval1 (Let e1 (Abs x e2))= case e1 of
 eval1 (Abs s e) = Abs (s) (eval1 e) 
                   
 
---evals :: EAB -> EAB
+evals :: EAB -> EAB
+evals (Var x)= Var x
+evals (Num n)= Num n
+evals (Bool b)=Bool b
+evals (Sum a b) = case (a, b) of
+                (Num c, Num d) -> eval1 (Sum (Num c) (Num d))
+                (Num c, e) -> eval1 (Sum (Num c) (evals e))
+                (c, Num e) -> eval1  (Sum (evals c) (Num e))
+                (c, d) -> eval1 (Sum (evals c) (evals d))
+evals (Prod a b)= case (a, b) of
+                (Num c, Num d) -> eval1 (Prod (Num c) (Num d))
+                (Num c, e) -> eval1 (Prod (Num c) (evals e))
+                (c, Num e) -> eval1 (Prod (evals c) (Num e))
+                (c, d) -> eval1 (Prod (evals c) (evals d))
+evals (Neg e) = case e of
+                --(Bool b) -> --quería que fuera como un not pero EAB no es Eq
+                (Num c) -> (Num (-c))
+                (c) -> eval1 (Prod (evals c) (eval1 (Neg (Num 1))) )
+evals (Pred n) = case n of
+                (Num c) -> eval1 (Num (c - 1)) 
+                (c) -> eval1 (Sum (evals c) (eval1 (Neg(Num 1)))) 
+evals (Suc n) = case n of
+                (Num c) -> eval1 (Num (c +1)) 
+                (c) -> eval1 (Sum (evals c) (eval1 (Num 1))) 
+evals (Not a) = case a of
+                (Bool True) -> eval1 (Bool False)
+                (Bool False) -> eval1 (Bool True)
+                (c) -> eval1 (Not (evals a))  
+evals (And a b) = case (a, b) of
+                (Bool True, Bool True) -> Bool True
+                (Bool False, Bool False) -> Bool False
+                (Bool False, c) -> eval1 (And (Bool False) (evals c))
+                (c, Bool False) -> eval1 (And (evals c) (Bool False))
+                (Bool True, c) -> eval1 (And (Bool True) (evals c))
+                (c, Bool True) -> eval1 (And (evals c) (Bool True))
+                (c, d) -> eval1 (And (evals c) (evals d))
+evals (Or a b) = case (a, b) of
+                (Bool True, Bool True) -> Bool True
+                (Bool False, Bool False) -> Bool False
+                (Bool True, c) -> eval1 (Or (Bool True) (evals c))
+                (c, Bool True) -> eval1 (Or (evals c) (Bool True))
+                (Bool False, c) -> eval1 (Or (Bool False) (evals c))
+                (c, Bool False) -> eval1 (Or (evals c) (Bool False))
+                (c, d) -> eval1 (Or (evals c) (evals d))
+evals (Iszero n) = case n of 
+                  (Num c) -> if c == 0
+                             then Bool True
+                             else Bool False  
+                  (c) -> eval1 (Iszero (evals c))   
+evals (If a b c) = case a of
+                    (Bool True)  -> b    
+                    (Bool False) -> c  
+                    (d) -> eval1 (If (evals d)(eval1 b)(eval1 c))
+evals (Let e1 (Abs x e2))= case e1 of
+                    (Num a) -> eval1 (subs e2 (x, Num a))
+                    (Bool b) -> subs e2 (x, Bool b)
+                    (Var s) -> subs e2 (x, Var s)
+                    (c) -> Let (eval1 c) (Abs (x) (e2))
 
 
+                
 
 --eval :: EAB -> EAB
 --eval _ = error "Implementar"
