@@ -181,10 +181,69 @@ evals (Let e1 (Abs x e2))= case e1 of
 
 data Type = TypeN -- Para Numeros
            |TypeB  -- Para Booleanos
+	   deriving (Show, Eq)
 type Ctx = [(String,Type)] -- [("y", TypeN)] para contextos.
 
---vt :: Ctx -> EAB -> Type -> Bool
---vt _ _ _ = error "Implementar"
+
+vt :: Ctx -> EAB -> Type -> Bool
+vt [] (Var x) typ = False
+vt _ (Num n) t = case t of 
+                  TypeN -> True
+                  _ -> False
+
+vt _ (Bool b) t = case t of 
+                  TypeB -> True
+                  _ -> False
+
+vt ((v, t):xs) e@(Var x) typ | t == typ && x == v = True
+                            | otherwise = vt xs e typ
+
+vt c (Sum e1 e2) t = case t of 
+                      TypeN -> vt c e1 t && vt c e2 t
+                      _ -> False
+
+vt c (Prod e1 e2) t = case t of 
+                      TypeN -> vt c e1 t && vt c e2 t
+                      _ -> False
+
+vt c (Neg e) t = case t of 
+                  TypeN -> vt c e t
+                  _ -> False
+
+vt c (Pred e) t = case t of 
+                  TypeN -> vt c e t
+                  _ -> False    
+
+vt c (Suc e) t = case t of 
+                  TypeN -> vt c e t
+                  _ -> False 
+
+vt c (And e1 e2) t = case t of 
+                      TypeB -> vt c e1 t && vt c e2 t
+                      _ -> False
+
+vt c (Or e1 e2) t = case t of 
+                      TypeB -> vt c e1 t && vt c e2 t
+                      _ -> False
+
+vt c (Not e) t = case t of 
+                  TypeB -> vt c e t
+                  _ -> False 
+
+vt c (Iszero e) t = case t of 
+                  TypeB -> vt c e TypeN
+                  _ -> False
+
+vt c (If e1 e2 e3) t = case (vt c e1 TypeB) of 
+                        True -> vt c e2 t && vt c e3 t
+                        _ -> False
+
+--vt [] (Sum (Num 1) (Num 5)) TypeN
+--vt [] (Sum (Num 10) (Bool False)) TypeN  salida : False
+
+--vt c (Let e (Abs x e2)) typ = "implementar"
+
+
 
 --evalt :: EAB -> EAB
 --evalt _ = error "Implementar"
