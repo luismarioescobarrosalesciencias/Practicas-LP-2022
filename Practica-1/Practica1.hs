@@ -238,7 +238,7 @@ vt c (If e1 e2 e3) t = case (vt c e1 TypeB) of
                         True -> vt c e2 t && vt c e3 t
                         _ -> False
 
---vt [] (Sum (Num 1) (Num 5)) TypeN
+--vt [] (Sum (Num 1) (Num 5)) TypeN  salida : True 
 --vt [] (Sum (Num 10) (Bool False)) TypeN  salida : False
 
 --vt c (Let e (Abs x e2)) typ = "implementar"
