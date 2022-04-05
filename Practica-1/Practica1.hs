@@ -297,7 +297,7 @@ evalt (Pred n) = case (vt [] n TypeN) of
 evalt (Suc n) = case (vt [] n TypeN) of
                  (True) -> evals (Suc n)
                  _ -> error "Se intento encontrar el sucesor de algo distinto a un numero"
-evalt (Not a) = case (vt [] n TypeB) of
+evalt (Not a) = case (vt [] a TypeB) of
                  (True) -> evals (Not a)
                  _ -> error "Se intento hacer Not a algo distinto de un Booleano"
 evalt (And a b) = case (vt [] a TypeB, vt [] b TypeB) of
