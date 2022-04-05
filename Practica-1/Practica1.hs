@@ -115,9 +115,9 @@ eval1 (Abs s e) = Abs (s) (eval1 e)
                   
 
 evals :: EAB -> EAB
-evals (Var x)= Var x
-evals (Num n)= Num n
-evals (Bool b)= Bool b
+evals (Var x) = Var x
+evals (Num n) = Num n
+evals (Bool b) = Bool b
 evals (Sum a b) = case (a, b) of
                 (Num c, Num d) -> eval1 (Sum (Num c) (Num d))
                 (Num c, e) -> eval1 (Sum (Num c) (evals e))
@@ -173,8 +173,47 @@ evals (Let e1 (Abs x e2))= case e1 of
                     (Var s) -> subs e2 (x, Var s)
                     (c) -> Let (eval1 c) (Abs (x) (e2))
 
---eval :: EAB -> EAB
---eval _ = error "Implementar"
+eval :: EAB -> EAB
+eval (Var x) = Var x
+eval (Num n) = Num n
+eval (Bool b) = Bool b
+eval (Sum a b) = case evals(Sum a b) of 
+                 (Num c) -> (Num c)
+                 _ -> error "Se intento sumar algo distinto a un numero"
+eval (Prod a b) = case evals(Prod a b) of 
+                 (Num c) -> (Num c)
+                 _ -> error "Se intento multiplicar algo distinto a un numero"                 
+eval (Neg e) = case evals(Neg e) of 
+                 (Num c) -> (Num c)
+                 _ -> error "Se intento encontrar el negativo de algo distinto a un numero"
+eval (Pred n) = case evals(Pred n) of 
+                 (Num c) -> (Num c)
+                 _ -> error "Se intento encontrar el predecesor de algo distinto a un numero"                 
+eval (Suc n) = case evals(Suc n) of
+                 (Num c) -> (Num c)
+                 _ -> error "Se intento encontrar el sucesor de algo distinto a un numero"
+eval (Not a) = case evals(Not a) of
+                 (Bool c) -> (Bool c)
+                 _ -> error "Se intento hacer Not a algo distinto de un Booleano"
+eval (And a b) = case evals(And a b) of
+                 (Bool c) -> (Bool c)
+                 _ -> error "Se intento hacer And a algo distinto de un Booleano"                              
+eval (Or a b) = case evals(Or a b) of 
+                 (Bool c) -> (Bool c)
+                 _ -> error "Se intento hacer Or a algo distinto de un Booleano"
+eval (Iszero n) = case evals(Iszero n) of
+                 (Bool c) -> (Bool c)
+                 _ -> error "Se intento saber si algo distinto de un numero es cero"
+eval (If a b c) = case evals(If a b c) of
+                 (Bool c) -> (Bool c)
+                 (Num c) -> (Num c)
+                 (c) -> eval (c)
+eval (Let e1 (Abs x e2)) = case(Let e1 (Abs x e2)) of
+                 (Bool c) -> (Bool c)
+                 (Num c) -> (Num c)
+                 (c) -> eval (c) 
+
+
 
 data Type = TypeN -- Para Numeros
            |TypeB deriving (Show, Eq)  -- Para Booleanos
