@@ -278,5 +278,38 @@ vt c (Let e1 (Abs x e2)) t = case (vt c e1 TypeB) of
 --vt [] (Sum (Num 1) (Num 5)) TypeN  salida : True 
 --vt [] (Sum (Num 10) (Bool False)) TypeN  salida : False
 
---evalt :: EAB -> EAB
---evalt _ = error "Implementar"
+evalt :: EAB -> EAB
+evalt (Var x) = Var x
+evalt (Num n) = Num n
+evalt (Bool b) = Bool b
+evalt (Sum a b) = case (vt [] a TypeN, vt [] b TypeN) of 
+                 (True, True) -> evals (Sum a b)
+                 _ -> error "Se intento sumar algo distinto a un numero"
+evalt (Prod a b) = case (vt [] a TypeN, vt [] b TypeN) of 
+                 (True, True) -> evals (Prod a b)
+                 _ -> error "Se intento multiplicar algo distinto a un numero"                 
+evalt (Neg e) = case (vt [] e TypeN) of 
+                 (True) -> evals (Neg e)
+                 _ -> error "Se intento encontrar el negativo de algo distinto a un numero"
+evalt (Pred n) = case (vt [] n TypeN) of 
+                 (True) -> evals (Pred n)
+                 _ -> error "Se intento encontrar el predecesor de algo distinto a un numero"                 
+evalt (Suc n) = case (vt [] n TypeN) of
+                 (True) -> evals (Suc n)
+                 _ -> error "Se intento encontrar el sucesor de algo distinto a un numero"
+evalt (Not a) = case (vt [] n TypeB) of
+                 (True) -> evals (Not a)
+                 _ -> error "Se intento hacer Not a algo distinto de un Booleano"
+evalt (And a b) = case (vt [] a TypeB, vt [] b TypeB) of
+                 (True, True) -> evals (And a b) 
+                 _ -> error "Se intento hacer And a algo distinto de un Booleano"                              
+evalt (Or a b) = case (vt [] a TypeB, vt [] b TypeB) of 
+                 (True, True) -> evals (Or a b) 
+                 _ -> error "Se intento hacer Or a algo distinto de un Booleano"
+evalt (Iszero n) = case (vt [] n TypeN) of
+                 (True) -> evals (Iszero n)
+                 _ -> error "Se intento saber si algo distinto de un numero es cero"
+--evalt (If a b c) = case --- of
+                
+--evalt (Let e1 (Abs x e2)) = case ---- of
+                 
