@@ -207,12 +207,11 @@ eval (Iszero n) = case evals(Iszero n) of
 eval (If a b c) = case evals(If a b c) of
                  (Bool c) -> (Bool c)
                  (Num c) -> (Num c)
-                 (c) -> eval (c)
+                 (c) -> eval (c) 
 eval (Let e1 (Abs x e2)) = case(Let e1 (Abs x e2)) of
                  (Bool c) -> (Bool c)
                  (Num c) -> (Num c)
                  (c) -> eval (c) 
-
 
 
 data Type = TypeN -- Para Numeros
@@ -232,7 +231,7 @@ vt _ (Bool b) t = case t of
                   _ -> False
 
 vt ((v, t):xs) e@(Var x) typ | t == typ && x == v = True
-                            | otherwise = vt xs e typ
+                             | otherwise = vt xs e typ
 
 vt c (Sum e1 e2) t = case t of 
                       TypeN -> vt c e1 t && vt c e2 t
@@ -273,6 +272,10 @@ vt c (Iszero e) t = case t of
 vt c (If e1 e2 e3) t = case (vt c e1 TypeB) of 
                         True -> vt c e2 t && vt c e3 t
                         _ -> False
+
+vt c (Let e1 (Abs x e2)) t = case (vt c e1 TypeB) of
+                              True -> vt ((x, TypeB):c) e2 t
+                              _ -> vt ((x, TypeN):c) e2 t
 
 --vt [] (Sum (Num 1) (Num 5)) TypeN  salida : True 
 --vt [] (Sum (Num 10) (Bool False)) TypeN  salida : False
