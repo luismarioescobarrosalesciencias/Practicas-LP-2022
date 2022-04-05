@@ -111,7 +111,6 @@ eval1 (Let e1 (Abs x e2))= case e1 of
                     (Bool b) -> subs e2 (x, Bool b)
                     (Var s) -> subs e2 (x, Var s)
                     (c) -> Let (eval1 c) (Abs (x) (e2))
-eval1 (Abs s e) = Abs (s) (eval1 e) 
                   
 
 evals :: EAB -> EAB
@@ -208,11 +207,10 @@ eval (If a b c) = case evals(If a b c) of
                  (Bool c) -> (Bool c)
                  (Num c) -> (Num c)
                  (c) -> eval (c) 
-eval (Let e1 (Abs x e2)) = case(Let e1 (Abs x e2)) of
+eval (Let e1 (Abs x e2)) = case evals(Let e1 (Abs x e2)) of
                  (Bool c) -> (Bool c)
                  (Num c) -> (Num c)
                  (c) -> eval (c) 
-
 
 data Type = TypeN -- Para Numeros
            |TypeB deriving (Show, Eq)  -- Para Booleanos
@@ -275,14 +273,10 @@ vt c (If e1 e2 e3) t = case (vt c e1 TypeB) of
 
 vt c (Let e1 (Abs x e2)) t = case (vt c e1 TypeB) of
                               True -> vt ((x, TypeB):c) e2 t
-                              _ -> vt ((x, TypeN):c) e2 t
+                              False -> vt ((x, TypeN):c) e2 t
 
 --vt [] (Sum (Num 1) (Num 5)) TypeN  salida : True 
 --vt [] (Sum (Num 10) (Bool False)) TypeN  salida : False
-
---vt c (Let e (Abs x e2)) typ = "implementar"
-
-
 
 --evalt :: EAB -> EAB
 --evalt _ = error "Implementar"
