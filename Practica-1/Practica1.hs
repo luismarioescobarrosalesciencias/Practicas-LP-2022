@@ -1,4 +1,11 @@
 module EAB where
+--Integrantes :
+
+--Luis Mario Escobar Rosales 
+
+--Gisel Maite Díaz Tinoco
+
+--Israel Villanueva Garcia
 
 data EAB = Var String 
         | Num Int
@@ -310,15 +317,13 @@ evalt (Iszero n) = case (vt [] n TypeN) of
                  (True) -> evals (Iszero n)
                  _ -> error "Se intento saber si algo distinto de un numero es cero"
 evalt e@(If e1 e2 e3)
-  | (vt [] e1 TypeB) &&
-    ((vt [] e2 TypeB && vt [] e3 TypeB) || (vt [] e2 TypeN && vt [] e3 TypeN)) = evals e
-  | otherwise = error "Error de tipado o por existencia de variables libres." 
+  | (vt [] e1 TypeB) && ((vt [] e2 TypeB && vt [] e3 TypeB) || (vt [] e2 TypeN && vt [] e3 TypeN)) = evals e
+  | otherwise = error "Algo salió mal por el tipado o por la existencia de variables libres"
+  
 evalt e@(Let e1 abs@(Abs x e2)) 
-  | vt [] e1 TypeB = if vt [(x, TypeB)] e TypeB || vt [(x, TypeB)] e TypeN
-                     then evals e
-                     else error "Error de tipado o por existencia de variables libres."
-  | vt [] e1 TypeN = if vt [(x, TypeN)] e TypeB || vt [(x, TypeN)] e TypeN
-                    then evals (Let (evals e1) abs)
-                    else error "Error de tipado o por existencia de variables libres."
-  | otherwise = error "Error de tipado o por existencia de variables libres."
+  | vt [] e1 TypeB = if vt [(x, TypeB)] e TypeB || vt [(x, TypeB)] e TypeN then evals e
+                     else error "Algo salió mal por el tipado o por la existencia de variables libres"
+  | vt [] e1 TypeN = if vt [(x, TypeN)] e TypeB || vt [(x, TypeN)] e TypeN then evals (Let (evals e1) abs)
+                    else error "Algo salió mal por el tipado o por la existencia de variables libres"
+  | otherwise = error "Algo salió mal por el tipado o por la existencia de variables libres"
                 
