@@ -309,7 +309,16 @@ evalt (Or a b) = case (vt [] a TypeB, vt [] b TypeB) of
 evalt (Iszero n) = case (vt [] n TypeN) of
                  (True) -> evals (Iszero n)
                  _ -> error "Se intento saber si algo distinto de un numero es cero"
---evalt (If a b c) = case --- of
+evalt e@(If e1 e2 e3)
+  | (vt [] e1 TypeB) &&
+    ((vt [] e2 TypeB && vt [] e3 TypeB) || (vt [] e2 TypeN && vt [] e3 TypeN)) = evals e
+  | otherwise = error "Error de tipado o por existencia de variables libres." 
+evalt e@(Let e1 abs@(Abs x e2)) 
+  | vt [] e1 TypeB = if vt [(x, TypeB)] e TypeB || vt [(x, TypeB)] e TypeN
+                     then evals e
+                     else error "Error de tipado o por existencia de variables libres."
+  | vt [] e1 TypeN = if vt [(x, TypeN)] e TypeB || vt [(x, TypeN)] e TypeN
+                    then evals e
+                    else error "Error de tipado o por existencia de variables libres."
+  | otherwise = error "Error de tipado o por existencia de variables libres."
                 
---evalt (Let e1 (Abs x e2)) = case ---- of
-                 
