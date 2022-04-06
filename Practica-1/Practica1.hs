@@ -91,6 +91,8 @@ eval1 (Not a) = case a of
 eval1 (And a b) = case (a, b) of
                 (Bool True, Bool True) -> Bool True
                 (Bool False, Bool False) -> Bool False
+                (Bool True, Bool False) -> Bool False
+                (Bool False, Bool True) -> Bool False
                 (Bool False, c) -> And (Bool False) (eval1 c)
                 (c, Bool False) -> And (eval1 c) (Bool False)
                 (Bool True, c) -> And (Bool True) (eval1 c)
@@ -99,6 +101,8 @@ eval1 (And a b) = case (a, b) of
 eval1 (Or a b) = case (a, b) of
                 (Bool True, Bool True) -> Bool True
                 (Bool False, Bool False) -> Bool False
+                (Bool True, Bool False) -> Bool True
+                (Bool False, Bool True) -> Bool True
                 (Bool True, c) -> Or (Bool True) (eval1 c)
                 (c, Bool True) -> Or (eval1 c) (Bool True)
                 (Bool False, c) -> Or (Bool False) (eval1 c)
@@ -170,9 +174,9 @@ evals (Iszero n) = case n of
                              else Bool False  
                   (c) -> eval1 (Iszero (evals c))   
 evals (If a b c) = case a of
-                    (Bool True)  -> evals ( b)    -- evals $ b
-                    (Bool False) -> evals   (c ) --evals $ c
-                    (d) -> eval1 (If d b c)
+                    (Bool True)  -> evals (b) 
+                    (Bool False) -> evals (c) 
+                    (d) -> eval1 (If (evals d) (b) (c))
 evals (Let e1 (Abs x e2))= case e1 of
                     (Num a) -> eval1 (subs e2 (x, Num a))
                     (Bool b) -> subs e2 (x, Bool b)
