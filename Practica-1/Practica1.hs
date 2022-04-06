@@ -163,9 +163,9 @@ evals (Iszero n) = case n of
                              else Bool False  
                   (c) -> eval1 (Iszero (evals c))   
 evals (If a b c) = case a of
-                    (Bool True)  -> b    
-                    (Bool False) -> c  
-                    (d) -> eval1 (If (evals d)(eval1 b)(eval1 c))
+                    (Bool True)  -> evals ( b)    -- evals $ b
+                    (Bool False) -> evals   (c ) --evals $ c
+                    (d) -> eval1 (If d b c)
 evals (Let e1 (Abs x e2))= case e1 of
                     (Num a) -> eval1 (subs e2 (x, Num a))
                     (Bool b) -> subs e2 (x, Bool b)
