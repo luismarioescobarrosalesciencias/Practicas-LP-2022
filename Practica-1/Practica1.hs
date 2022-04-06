@@ -318,7 +318,7 @@ evalt e@(Let e1 abs@(Abs x e2))
                      then evals e
                      else error "Error de tipado o por existencia de variables libres."
   | vt [] e1 TypeN = if vt [(x, TypeN)] e TypeB || vt [(x, TypeN)] e TypeN
-                    then evals e
+                    then evals (Let (evals e1) abs)
                     else error "Error de tipado o por existencia de variables libres."
   | otherwise = error "Error de tipado o por existencia de variables libres."
                 
