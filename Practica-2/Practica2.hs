@@ -1,37 +1,42 @@
-module Sintax where
+module Practica2 where 
+import Sintaxis 
 
-type Identifier = String
-    
+type Identifier= Int
 
-{--
- -- Sintaxis Practica1
- -- Para su Practica 2 deben modificar esto (es lo unico que necesitan de su P1)
- -- Agregar y eliminar las cosas que sean necesarias segun la descripcion que se
- -- dio en la especificacionde la practica.
- --}
-data Expr = Var Identifier | I Int | B Bool
-         | Add Expr Expr | Mul Expr Expr
-         | Succ Expr | Pred Expr -- | Neg Expr -- Hint 1: Eliminar el constructor Neg
-         | And Expr Expr | Or Expr Expr
-         | Not Expr | Iszero Expr
-         | If Expr Expr Expr
-         | Let Expr Expr -- Hint 2: El Let pueden implementarlo como en la especificacion de la practica 1 o como en la 2
-         | Fn Identifier Expr  -- Hint 3: Este constructor puede cambiar de nombre (Fn)
-           deriving (Show, Eq)
-
--- type Identifier = Int
-data Type = T Identifier
+data Type = T Practica2.Identifier
         | Integer | Boolean
         | Arrow Type Type
 
-type Ctxt =  [(Identifier, Type)]
+instance Show Type where 
+        show e = case e of 
+                (T i) -> "T " ++ (show i)
+                (Arrow e1 e2) -> show e1 ++ " -> " ++ show e2
+                Integer -> "int"
+                Boolean -> "bool"
 
+type Ctxt = [(Sintaxis.Identifier, Type)]
+type Substitution = [(Practica2.Identifier, Type)]
 type Constraint = [(Type, Type)]
 
-tvars :: Type -> [Identifier]
+tvars :: Type -> [Practica2.Identifier]
 tvars x = case x of 
         T i -> [i]
-        Integer -> []
-        Boolean -> []
         Arrow e1 e2 -> tvars e1 ++ tvars e2
+        Integer -> []
+        Boolean -> [] 
 
+subst :: Type -> Substitution -> Type
+subst t [] = t
+subst (T n) ((i, t):xs) = if n==i
+                          then subst t xs 
+                          else subst (T n) xs
+subst (Arrow t1 t2) xs = Arrow (subst t1 xs) (subst t2 xs)
+subst t _ = t
+
+comp :: Substitution -> Substitution -> Substitution
+comp s1 s2 = noDup ((map (\x -> (fst x, subst (snd x) s2)) s1) ++ s2)
+
+--Quita duplicados de una lista
+noDup :: (Eq a) => [(a, b)] -> [(a, b)]
+noDup (x:xs) = x : noDup (filter (\y -> (fst y) /= (fst x)) xs)
+noDup [] = [] 
