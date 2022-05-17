@@ -15,6 +15,8 @@ data Expr = Var Identifier | I Int | B Bool
          | And Expr Expr | Or Expr Expr
          | Not Expr | Iszero Expr
          | If Expr Expr Expr
+         | App Expr Expr
+         | Lt Expr Expr | Gt Expr Expr | Eq Expr Expr
          | Let Identifier Expr Expr 
          | Fn Identifier Expr  
            deriving (Show, Eq)
