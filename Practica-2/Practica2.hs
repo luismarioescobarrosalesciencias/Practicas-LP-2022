@@ -25,12 +25,30 @@ tvars x = case x of
         Integer -> []
         Boolean -> [] 
 
+fresh :: [Type] -> Type
+fresh [] = T 0
+fresh x = T (freshAux (x) (0))
+
+
+-- Da un valor int distinto a los valores ints de los tipos dados en la lista Type.
+freshAux :: [Type] -> Int -> Int
+freshAux [] y = y
+freshAux (x:xs) y = if (estaContenido ((x:xs)) (y)) then freshAux ((x:xs)) (y + 1) else y
+
 -- Para quitar en tvars los nuemeros repetidos.
 quitaVarsRepetidos  :: (Eq c) => [c] -> [c]
 quitaVarsRepetidos [] = []
 quitaVarsRepetidos (x:xs) = x : quitaVarsRepetidos(filter (/= x) xs) 
 
+-- Checa si un int esta contenido en el valor de un tipo.
+estaContenido :: [Type] -> Int -> Bool
+estaContenido [] y = False
+estaContenido (x:xs) y = if(obtenInt (x) == y) then True else estaContenido (xs) (y) 
 
+-- Obtiene un int de un tipo T n 
+obtenInt :: Type -> Practica2.Identifier
+obtenInt x = case x of 
+        T i -> i       
 
 subst :: Type -> Substitution -> Type
 subst t [] = t
