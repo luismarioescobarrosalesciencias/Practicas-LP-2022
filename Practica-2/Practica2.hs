@@ -21,9 +21,16 @@ type Constraint = [(Type, Type)]
 tvars :: Type -> [Practica2.Identifier]
 tvars x = case x of 
         T i -> [i]
-        Arrow e1 e2 -> tvars e1 ++ tvars e2
+        Arrow e1 e2 -> quitaVarsRepetidos (tvars e1 ++ tvars e2)
         Integer -> []
         Boolean -> [] 
+
+-- Para quitar en tvars los nuemeros repetidos.
+quitaVarsRepetidos  :: (Eq c) => [c] -> [c]
+quitaVarsRepetidos [] = []
+quitaVarsRepetidos (x:xs) = x : quitaVarsRepetidos(filter (/= x) xs) 
+
+
 
 subst :: Type -> Substitution -> Type
 subst t [] = t
