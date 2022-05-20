@@ -1,7 +1,7 @@
 module Practica2 where 
 import Sintaxis 
 
-type Identifier= Int
+type Identifier = Int
 
 data Type = T Practica2.Identifier
         | Integer | Boolean
@@ -65,3 +65,6 @@ comp s1 s2 = noDup ((map (\x -> (fst x, subst (snd x) s2)) s1) ++ s2)
 noDup :: (Eq a) => [(a, b)] -> [(a, b)]
 noDup (x:xs) = x : noDup (filter (\y -> (fst y) /= (fst x)) xs)
 noDup [] = [] 
+
+              
+
