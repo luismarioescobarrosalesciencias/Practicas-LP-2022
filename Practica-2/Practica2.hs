@@ -50,7 +50,7 @@ obtenInt :: Type -> Practica2.Identifier
 obtenInt x = case x of 
         T i -> i       
 
-rest :: ( [ Type ] , Expr ) -> ( [ Type ] , Ctxt , Type, Constraint )
+rest :: ([Type] , Expr) -> ([Type] , Ctxt , Type, Constraint)
 rest (xs, (Var x)) = (((tn):xs), [(x, tn)], (tn) , [])
                         where tn = fresh xs
 rest (xs, (I n)) = (Integer:xs,[],Integer,[])
@@ -67,13 +67,41 @@ rest (xs,(Mul e1 e2)) = (xs2, g1 ++ g2, Integer, rf)
                               rs = [(tn1,tn2) | (x,tn1) <- g1, (y,tn2) <- g2, x ==y]
                               re = [(t1,Integer),(t2,Integer)]
                               rf = r1++r2++rs++re
+rest (xs,(And e1 e2)) = (xs2, g1 ++ g2, Boolean, rf)
+                        where (xs1,g1,t1,r1) = (rest (xs,e1)) 
+                              (xs2,g2,t2,r2) = (rest (xs1,e2))
+                              rs = [(tn1,tn2) | (x,tn1) <- g1, (y,tn2) <- g2, x ==y]
+                              re = [(t1,Boolean),(t2,Boolean)]
+                              rf = r1++r2++rs++re    
+rest (xs,(Or e1 e2)) = (xs2, g1 ++ g2, Boolean, rf)
+                        where (xs1,g1,t1,r1) = (rest (xs,e1)) 
+                              (xs2,g2,t2,r2) = (rest (xs1,e2))
+                              rs = [(tn1,tn2) | (x,tn1) <- g1, (y,tn2) <- g2, x ==y]
+                              re = [(t1,Boolean),(t2,Boolean)]
+                              rf = r1++r2++rs++re 
+rest (xs,(Lt e1 e2)) = (xs2, g1 ++ g2, Boolean, rf)
+                        where (xs1,g1,t1,r1) = (rest (xs,e1)) 
+                              (xs2,g2,t2,r2) = (rest (xs1,e2))
+                              rs = [(tn1,tn2) | (x,tn1) <- g1, (y,tn2) <- g2, x ==y]
+                              re = [(t1,Boolean),(t2,Boolean)]
+                              rf = r1++r2++rs++re    
+rest (xs, Gt e1 e2) = (xs2, g1 ++ g2, Boolean, rf)
+                        where (xs1,g1,t1,r1) = (rest (xs,e1)) 
+                              (xs2,g2,t2,r2) = (rest (xs1,e2))
+                              rs = [(tn1,tn2) | (x,tn1) <- g1, (y,tn2) <- g2, x ==y]
+                              re = [(t1,Boolean),(t2,Boolean)]
+                              rf = r1++r2++rs++re                                                        
+rest (xs, Iszero e) = (xs1, g1 , Boolean, r1)
+                        where (xs1, g1, t1, r1) = (rest (xs, e))                                                                                     
 rest (xs, (Succ e)) = (xs1, g1 , Integer, r1)
                         where (xs1, g1, t1, r1) = (rest (xs, e))
 rest (xs, (Pred e)) = (xs1, g1 , Integer, r1)
                         where (xs1, g1, t1, r1) = (rest (xs, e))
 rest (xs, (Not e)) = (xs1, g1 , Boolean, r1)
                         where (xs1, g1, t1, r1) = (rest (xs, e))
-                          
+
+                  
+                           
 
 subst :: Type -> Substitution -> Type
 subst t [] = t
