@@ -53,8 +53,8 @@ obtenInt x = case x of
 rest :: ( [ Type ] , Expr ) -> ( [ Type ] , Ctxt , Type, Constraint )
 rest (xs, (Var x)) = (((tn):xs), [(x, tn)], (tn) , [])
                         where tn = fresh xs
-rest (xs, (I n)) = (xs,[],Integer,[])
-rest (xs, (B b)) = (xs, [], Boolean, [])
+rest (xs, (I n)) = (Integer:xs,[],Integer,[])
+rest (xs, (B b)) = (Boolean:xs, [], Boolean, [])
 rest (xs,(Add e1 e2)) = (xs2, g1 ++ g2, Integer, rf)
                         where (xs1,g1,t1,r1) = (rest (xs,e1)) 
                               (xs2,g2,t2,r2) = (rest (xs1,e2))
