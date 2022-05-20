@@ -51,7 +51,8 @@ obtenInt x = case x of
         T i -> i       
 
 rest :: ( [ Type ] , Expr ) -> ( [ Type ] , Ctxt , Type, Constraint )
-rest (xs, (Var x)) = (((fresh xs):xs), [(x,T 1)], (T 1) , [])
+rest (xs, (Var x)) = (((tn):xs), [(x, tn)], (tn) , [])
+                        where tn = fresh xs
 rest (xs, (I n)) = (xs,[],Integer,[])
 rest (xs, (B b)) = (xs, [], Boolean, [])
 rest (xs,(Add e1 e2)) = (xs2, g1 ++ g2, Integer, rf)
