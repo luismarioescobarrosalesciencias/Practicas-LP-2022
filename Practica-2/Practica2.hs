@@ -50,6 +50,30 @@ obtenInt :: Type -> Practica2.Identifier
 obtenInt x = case x of 
         T i -> i       
 
+rest :: ( [ Type ] , Expr ) -> ( [ Type ] , Ctxt , Type, Constraint )
+rest (xs, (Var x)) = (((fresh xs):xs), [(x,T 1)], (T 1) , [])
+rest (xs, (I n)) = (xs,[],Integer,[])
+rest (xs, (B b)) = (xs, [], Boolean, [])
+rest (xs,(Add e1 e2)) = (xs2, g1 ++ g2, Integer, rf)
+                        where (xs1,g1,t1,r1) = (rest (xs,e1)) 
+                              (xs2,g2,t2,r2) = (rest (xs1,e2))
+                              rs = [(tn1,tn2) | (x,tn1) <- g1, (y,tn2) <- g2, x ==y]
+                              re = [(t1,Integer),(t2,Integer)]
+                              rf = r1++r2++rs++re
+rest (xs,(Mul e1 e2)) = (xs2, g1 ++ g2, Integer, rf)
+                        where (xs1,g1,t1,r1) = (rest (xs,e1)) 
+                              (xs2,g2,t2,r2) = (rest (xs1,e2))
+                              rs = [(tn1,tn2) | (x,tn1) <- g1, (y,tn2) <- g2, x ==y]
+                              re = [(t1,Integer),(t2,Integer)]
+                              rf = r1++r2++rs++re
+rest (xs, (Succ e)) = (xs1, g1 , Integer, r1)
+                        where (xs1, g1, t1, r1) = (rest (xs, e))
+rest (xs, (Pred e)) = (xs1, g1 , Integer, r1)
+                        where (xs1, g1, t1, r1) = (rest (xs, e))
+rest (xs, (Not e)) = (xs1, g1 , Boolean, r1)
+                        where (xs1, g1, t1, r1) = (rest (xs, e))
+                          
+
 subst :: Type -> Substitution -> Type
 subst t [] = t
 subst (T n) ((i, t):xs) = if n==i
@@ -58,13 +82,19 @@ subst (T n) ((i, t):xs) = if n==i
 subst (Arrow t1 t2) xs = Arrow (subst t1 xs) (subst t2 xs)
 subst t _ = t
 
+substCons :: Substitution -> Constraint -> Constraint
+substCons _ [] = []
+substCons c ((t , s):xs) =  [((subst t c) , (subst s c))] ++ substCons c xs
+
 comp :: Substitution -> Substitution -> Substitution
 comp s1 s2 = noDup ((map (\x -> (fst x, subst (snd x) s2)) s1) ++ s2)
+
+--porque en lab se vio que se le pasaba un unificador (lista de substituciones) y devolcia unificador
+compLis :: [Substitution] -> Substitution -> [Substitution]
+compLis [] _ = []
+compLis (x:xs) s = [comp x s] ++ compLis xs s
 
 --Quita duplicados de una lista
 noDup :: (Eq a) => [(a, b)] -> [(a, b)]
 noDup (x:xs) = x : noDup (filter (\y -> (fst y) /= (fst x)) xs)
 noDup [] = [] 
-
-              
-
