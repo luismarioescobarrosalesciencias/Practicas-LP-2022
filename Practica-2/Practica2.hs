@@ -99,6 +99,15 @@ rest (xs, (Pred e)) = (xs1, g1 , Integer, r1)
                         where (xs1, g1, t1, r1) = (rest (xs, e))
 rest (xs, (Not e)) = (xs1, g1 , Boolean, r1)
                         where (xs1, g1, t1, r1) = (rest (xs, e))
+rest (xs, (App e1 e2)) = (((tn):xs), g1 ++ g2, Integer, rf)
+                        where (xs1,g1,t1,r1) = (rest (xs,e1)) 
+                              (xs2,g2,t2,r2) = (rest (xs1,e2))
+                              rs = [(tn1,tn2) | (x,tn1) <- g1, (y,tn2) <- g2, x ==y]
+                              re = [(t1,Integer),(t2,Integer)]
+                              rf = r1++r2++rs++re
+                              tn = fresh xs
+
+
 
                   
                            
