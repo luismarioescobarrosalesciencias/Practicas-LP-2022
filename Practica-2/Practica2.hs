@@ -106,10 +106,20 @@ rest (xs, (App e1 e2)) = (((tn):xs), g1 ++ g2, Integer, rf)
                               re = [(t1,Integer),(t2,Integer)]
                               rf = r1++r2++rs++re
                               tn = fresh xs
-
-
-
-                  
+rest (xs, (Let i e1 e2)) = (xs2 ++ [x], g1 ++ g2 ++ [(i, x)], t2, rf)
+                        where (xs1,g1,t1,r1) = (rest (xs,e1)) 
+                              (xs2,g2,t2,r2) = (rest (xs1,e2))
+                              rs = [(tn1,tn2) | (x,tn1) <- g1, (y,tn2) <- g2, x ==y]
+                              x = fresh xs2
+                              rf = r1++r2++rs++[(t1, x)]
+rest (xs,(If e1 e2 e3)) = (xs3, g1 ++ g2 ++ g3, t1, r1++r2++r3++rt1++rt2++rt3++[(t2, t3), (t1, Boolean)])
+                        where (xs1,g1,t1,r1) = (rest (xs,e1)) 
+                              (xs2,g2,t2,r2) = (rest ([t1],e2))
+                              (xs3,g3,t3,r3) = (rest ([t2], e3))
+                              rt1 = [(s2,s3) | (x,s2) <- g2, (y,s3) <- g1, x ==y]
+                              rt2 = [(s2,s3) | (x,s2) <- g2, (y,s3) <- g3, x ==y]
+                              rt3 = [(s2,s3) | (x,s2) <- g1, (y,s3) <- g3, x ==y]
+               
                            
 
 subst :: Type -> Substitution -> Type
@@ -136,3 +146,4 @@ compLis (x:xs) s = [comp x s] ++ compLis xs s
 noDup :: (Eq a) => [(a, b)] -> [(a, b)]
 noDup (x:xs) = x : noDup (filter (\y -> (fst y) /= (fst x)) xs)
 noDup [] = [] 
+
