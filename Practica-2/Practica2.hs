@@ -6,6 +6,7 @@ type Identifier = Int
 data Type = T Practica2.Identifier
         | Integer | Boolean
         | Arrow Type Type
+        deriving (Eq)
 
 instance Show Type where 
         show e = case e of 
@@ -147,3 +148,14 @@ noDup :: (Eq a) => [(a, b)] -> [(a, b)]
 noDup (x:xs) = x : noDup (filter (\y -> (fst y) /= (fst x)) xs)
 noDup [] = [] 
 
+unif :: Constraint -> Substitution
+unif [] = []
+unif ((t,s):xs)
+  | t == s = unif (xs)
+  | otherwise = case (t, s) of
+                      (T i,s) -> if  i `elem` (tvars s)
+                                     then error "No se puede hacer"
+                                     else comp (unif (substCons [(i, s)] xs)) ([(i,s)])
+                      (t, T i) -> unif ((T i,t):xs)
+                      (Arrow t1 t2,Arrow s1 s2) -> unif ([(t1,s1),(t2,s2)] ++ xs)
+                      (_ , _) -> error "Tipo no apto a unificarse"
