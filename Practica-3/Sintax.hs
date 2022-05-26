@@ -19,6 +19,13 @@ data Expr = Var Identifier | I Int | B Bool
           | Let Identifier Expr Expr
           | Fn Identifier Expr
           | App Expr Expr
+          | L Int
+          | Alloc Expr
+          | Dref Expr
+          | Assign Expr Expr
+          | Void
+          | Seq Expr Expr
+          | While Expr Expr
           deriving (Show, Eq)
 
 {--

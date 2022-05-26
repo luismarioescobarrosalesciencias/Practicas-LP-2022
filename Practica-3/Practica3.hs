@@ -1,24 +1,15 @@
 module Practica3 where 
 import Sintax
 
-data Expr =  L Int
-         | Alloc Practica3.Expr
-         | Dref Practica3.Expr
-         | Assign Practica3.Expr Practica3.Expr
-         | Void
-         | Seq Practica3.Expr Practica3.Expr
-         | While Sintax.Expr Sintax.Expr
-         deriving (Show, Eq)
-
 -- Alias para direcciones de memoria.
 type Address = Int
 {- - Alias para valores. Aunque por implementacion se podria poner cualquier expresion, se espera solo
 sean valores. - -}
-type Value = Sintax.Expr
+type Value = Expr
 type Cell = ( Address , Value )
 type Memory = [ Cell ]
 
-newAddress :: Memory -> Practica3.Expr
+newAddress :: Memory -> Expr
 newAddress [] = (L 0) 
 newAddress xs = L (newAddressAux xs 0)
 
@@ -46,3 +37,28 @@ updateAux :: Cell -> Memory -> Memory
 --updateAux c [] = error "no debería pasar esto"
 updateAux c (x:xs) = if (fst c) == (fst x) then (c:xs) else [x] ++ (updateAux c xs)
 
+frVars :: Expr -> [ Identifier ]
+frVars (Var s) = [s]
+frVars (I _) = []
+frVars (B _) = []
+frVars (Add e1 e2) = frVars e1 ++ frVars e2
+frVars (Mul e1 e2) = frVars e1 ++ frVars e2
+frVars (Succ e) = frVars e
+frVars (Pred e) = frVars e
+frVars (And e1 e2) = frVars e1 ++ frVars e2
+frVars (Or e1 e2) = frVars e1 ++ frVars e2
+frVars (Not e) = frVars e
+frVars (Iszero e) = frVars e
+frVars (Lt e1 e2) = frVars e1 ++ frVars e2
+frVars (Gt e1 e2) = frVars e1 ++ frVars e2
+frVars (Eq e1 e2) = frVars e1 ++ frVars e2
+frVars (If e1 e2 e3) = frVars e1 ++ frVars e2 ++ frVars e3
+frVars (Let i e1 e2) = filter (/= i) (frVars e2) -- ???
+frVars (Fn i e) = filter (/=i) (frVars e)
+frVars (App e1 e2) = frVars e1 ++ frVars e2
+frVars (L i) = []
+frVars (Alloc e) = frVars e
+frVars (Assign e1 e2) = frVars e1 ++ frVars e2
+frVars (Void) = []
+frVars (Seq e1 e2) = frVars e1 ++ frVars e2
+frVars (While e1 e2) = frVars e1 ++ frVars e2
