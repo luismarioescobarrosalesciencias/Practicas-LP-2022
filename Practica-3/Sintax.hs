@@ -1,6 +1,6 @@
 module Sintax where
 
-type Identifier = String
+type Identifier = String 
     
 
 {--
@@ -27,6 +27,8 @@ data Expr = Var Identifier | I Int | B Bool
           | Seq Expr Expr
           | While Expr Expr
           deriving (Show, Eq)
+
+type Substitution = (Identifier , Expr)
 
 {--
     Igual deben adecuar las funciones realizas en la practica 1 para ajustarse a esta sintaxis
