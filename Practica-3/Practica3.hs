@@ -32,13 +32,12 @@ access n (x:xs) = if repetidos (x:xs) then error"Memory Corrupted"
                   else if (estaContenido (x:xs) n) then Just (accessAux n (x:xs)) else Nothing
 
 accessAux :: Address -> Memory -> Value
---accessAux n [] = error "no debería pasar esto"
---accessAux n (x:[]) = if (fst x) == n then snd x
 accessAux n (x:xs) = if (fst x) == n then snd x else accessAux n xs
 
 update :: Cell -> Memory -> Maybe Memory
 update c [] = Nothing
-update c (x:xs) = if (estaContenido (x:xs) (fst c)) then Just (updateAux c (x:xs)) else Nothing
+update c (x:xs) = if repetidos (x:xs) then error"Memory Corrupted"
+                   else if (estaContenido (x:xs) (fst c)) then Just (updateAux c (x:xs)) else Nothing
 
 updateAux :: Cell -> Memory -> Memory
 --updateAux c [] = error "no debería pasar esto"
