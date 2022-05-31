@@ -28,10 +28,12 @@ estaContenido (x:xs) n = if (fst x) == n then True else estaContenido xs n
 
 access :: Address -> Memory -> Maybe Value
 access n [] = Nothing
-access n (x:xs) = if (estaContenido (x:xs) n) then Just (accessAux n xs) else Nothing
+access n (x:xs) = if repetidos (x:xs) then error"Memory Corrupted"
+                  else if (estaContenido (x:xs) n) then Just (accessAux n (x:xs)) else Nothing
 
 accessAux :: Address -> Memory -> Value
 --accessAux n [] = error "no debería pasar esto"
+--accessAux n (x:[]) = if (fst x) == n then snd x
 accessAux n (x:xs) = if (fst x) == n then snd x else accessAux n xs
 
 update :: Cell -> Memory -> Maybe Memory
