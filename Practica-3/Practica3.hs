@@ -10,8 +10,13 @@ type Cell = ( Address , Value )
 type Memory = [ Cell ]
 
 newAddress :: Memory -> Expr
-newAddress [] = (L 0) 
-newAddress xs = L (newAddressAux xs 0)
+newAddress [] = (L 0)
+newAddress xs = if repetidos xs then error"Memory Corrupted" else  L (newAddressAux xs 0)
+
+repetidos :: Memory -> Bool
+retetidos [] = False
+repetidos (x:[]) = False
+repetidos (x:xs) = if (estaContenido xs (fst x))then True else repetidos (xs)
 
 newAddressAux :: Memory -> Int -> Int
 newAddressAux [] n = n
@@ -96,10 +101,10 @@ eval1 :: (Memory , Expr ) -> (Memory , Expr)
 eval1 (mem, Var x) = (mem, Var x)
 eval1 (mem, B x) = (mem, B x)
 eval1 (mem, I x) = (mem, I x)
-eval1 (mem, (Add e1 e2)) = case (e1, e2) of 
+eval1 (mem, (Add e1 e2)) = case (e1, e2) of
                            ((I e1), (I e2)) -> (mem, I (e1+e2))
                            (s , c) -> (mem, Add e1 e2) --O marcar error???
-eval1 (mem, (Mul e1 e2)) = case (e1, e2) of 
+eval1 (mem, (Mul e1 e2)) = case (e1, e2) of
                            ((I e1), (I e2)) -> (mem, I (e1*e2))
                            (s , c) -> (mem, Mul e1 e2)
 eval1 (mem, Succ e) = case e of
@@ -108,18 +113,18 @@ eval1 (mem, Succ e) = case e of
 eval1 (mem, Pred e) = case e of
                       (I x) -> (mem, I (x-1))
                       (_) -> error "No se ingreso un numero"
-eval1 (mem, (And e1 e2)) = case (e1, e2) of 
+eval1 (mem, (And e1 e2)) = case (e1, e2) of
                            ((B e1), (B e2)) -> (mem, B (e1 && e2))
                            (s , c) -> (mem, And e1 e2)
-eval1 (mem, (Or e1 e2)) = case (e1, e2) of 
+eval1 (mem, (Or e1 e2)) = case (e1, e2) of
                            ((B e1), (B e2)) -> (mem, B (e1 || e2))
                            (s , c) -> (mem, Or e1 e2)
-eval1 (mem, Not e) = case e of 
+eval1 (mem, Not e) = case e of
                     (B e) -> (mem, B (not e))
                     (_) -> error "Lo que se ingresó no es booleano"
-eval1 (mem, Iszero e) = case e of 
+eval1 (mem, Iszero e) = case e of
                         (I e) -> if e==0
                                 then (mem, B True)
                                 else (mem, B False)
                         (_) -> error "No se puede procesar"
-                    
+
