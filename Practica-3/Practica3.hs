@@ -240,4 +240,15 @@ evale (e@(Succ e1)) = case evals ([(0, Void)], e) of
 evale (e@(Pred e1)) = case evals ([(0, Void)], e) of
                         (mem, I s) -> I s
                         _ -> error "La expresion es erronea para Pred"    
-                     
+evale (e@(And e1 e2)) = case evals ([(0, Void)], e) of
+                        (mem, B s) -> B s
+                        _ -> error "La expresion es erronea para And"   
+evale (e@(Or e1 e2)) = case evals ([(0, Void)], e) of
+                        (mem, B s) -> B s
+                        _ -> error "La expresion es erronea para Or"                   
+evale (e@(Not e1)) = case evals ([(0, Void)], e) of
+                        (mem, B s) -> B s
+                        _ -> error "La expresion es erronea para Not" 
+evale (e@(Iszero e1)) = case evals ([(0, Void)], e) of
+                        (mem, B s) -> B s
+                        _ -> error "La expresion es erronea para Iszero" 
