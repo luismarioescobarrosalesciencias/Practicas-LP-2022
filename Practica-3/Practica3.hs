@@ -59,7 +59,7 @@ frVars (Lt e1 e2) = frVars e1 ++ frVars e2
 frVars (Gt e1 e2) = frVars e1 ++ frVars e2
 frVars (Eq e1 e2) = frVars e1 ++ frVars e2
 frVars (If e1 e2 e3) = frVars e1 ++ frVars e2 ++ frVars e3
-frVars (Let i e1 e2) = filter (/= i) (frVars e2) -- ???
+frVars (Let i e1 e2) = filter (== i) (frVars e2) -- ???
 frVars (Fn i e) = filter (/=i) (frVars e) -- ??
 frVars (App e1 e2) = frVars e1 ++ frVars e2
 frVars (L i) = []
@@ -91,9 +91,9 @@ subst (Let i e1 e2) s = if (fst s) `elem` (frVars e2)
                         then Let i e1 e2
                         else Let i (subst e1 s) (subst e2 s)
 subst (App e1 e2) s = App (subst e1 s) (subst e2 s)
---subst (L i) = L i ?????
+subst (L i) s = L i
 subst (Alloc e) s = Alloc (subst e s)
-subst (Assign e1 e2) s = Assign (subst e1 s) (subst e2 s)
+subst (Assign e1 e2) s = Assign e1 (subst e2 s)
 subst (Void) s = Void
 subst (Seq e1 e2) s = Seq (subst e1 s) (subst e2 s)
 subst (While e1 e2) s = While (subst e1 s) (subst e2 s)
