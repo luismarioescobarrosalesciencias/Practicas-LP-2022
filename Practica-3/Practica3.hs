@@ -198,6 +198,31 @@ evals (mem, Iszero e) = case e of
                               else (mem, B False)
                       (s) ->  eval1 (mem', p)
                               where (mem', p) = eval1 (mem, s)
+evals (mem, Lt e1 e2) = case (e1, e2) of 
+                           ((I x), (I y)) -> if x < y
+                                             then (mem, B True)
+                                             else (mem, B False)
+                           (s, c) -> eval1 (memt, h)
+                                  where (mem1, p) = eval1 (mem, s)
+                                        (mem2, q) = eval1 (mem1, c)
+                                        (memt, h) = eval1 (mem2, Lt p q)
+evals (mem, Gt e1 e2) = case (e1, e2) of 
+                           ((I x), (I y)) -> if x > y
+                                             then (mem, B True)
+                                             else (mem, B False)
+                           (s, c) -> eval1 (memt, h)
+                                  where (mem1, p) = eval1 (mem, s)
+                                        (mem2, q) = eval1 (mem1, c)
+                                        (memt, h) = eval1 (mem2, Gt p q)
+evals (mem, Eq e1 e2) = case (e1, e2) of 
+                           ((I x), (I y)) -> if x == y
+                                             then (mem, B True)
+                                             else (mem, B False)
+                           (s, c) -> eval1 (memt, h)
+                                  where (mem1, p) = eval1 (mem, s)
+                                        (mem2, q) = eval1 (mem1, c)
+                                        (memt, h) = eval1 (mem2, Eq p q)
+
 
 evale :: Expr -> Expr
 evale (Var x) = (Var x)
