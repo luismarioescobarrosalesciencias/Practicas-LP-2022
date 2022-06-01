@@ -198,3 +198,21 @@ evals (mem, Iszero e) = case e of
                               else (mem, B False)
                       (s) ->  eval1 (mem', p)
                               where (mem', p) = eval1 (mem, s)
+
+evale :: Expr -> Expr
+evale (Var x) = (Var x)
+evale (B x) = (B x)
+evale (I x) = (I x)
+evale (e@(Add e1 e2)) = case evals ([(0, Void)], e) of
+                        (mem, I s) -> I s
+                        _ -> error "La expresion es erronea para Add" 
+evale (e@(Mul e1 e2)) = case evals ([(0, Void)], e) of
+                        (mem, I s) -> I s
+                        _ -> error "La expresion es erronea para Mul" 
+evale (e@(Succ e1)) = case evals ([(0, Void)], e) of
+                        (mem, I s) -> I s
+                        _ -> error "La expresion es erronea para Succ"
+evale (e@(Pred e1)) = case evals ([(0, Void)], e) of
+                        (mem, I s) -> I s
+                        _ -> error "La expresion es erronea para Pred"    
+                     
