@@ -91,7 +91,7 @@ subst (Let i e1 e2) s = if (fst s) `elem` (frVars e2)
                         then Let i e1 e2
                         else Let i (subst e1 s) (subst e2 s)
 subst (App e1 e2) s = App (subst e1 s) (subst e2 s)
---subst (L i) = L i ?????
+subst (L i) s = (L i)
 subst (Alloc e) s = Alloc (subst e s)
 subst (Assign e1 e2) s = Assign (subst e1 s) (subst e2 s)
 subst (Void) s = Void
@@ -124,8 +124,24 @@ eval1 (mem, Not e) = case e of
                     (B e) -> (mem, B (not e))
                     (_) -> error "Lo que se ingresó no es booleano"
 eval1 (mem, Iszero e) = case e of
-                        (I e) -> if e==0
+                        (I e) -> if e == 0
                                 then (mem, B True)
                                 else (mem, B False)
                         (_) -> error "No se puede procesar"
+eval1 (mem, Lt e1 e2) = case (e1, e2) of
+                              (I e1, I e2) -> (mem, B (e1 < e2))  
+                              (s , c) -> (mem, Lt e1 e2)  
+eval1 (mem, Gt e1 e2) = case (e1, e2) of
+                              (I e1, I e2) -> (mem, B (e1 > e2))
+                              (s , c) -> (mem, Gt e1 e2)  
+eval1 (mem, Eq e1 e2) = case (e1, e2) of
+                              (I e1, I e2) -> (mem, B (e1 == e2))  
+                              (s , c) -> (mem, Eq e1 e2)  
+eval1 (mem, If e1 e2 e3) = case e1 of
+                            (B True) -> (mem, e2)
+                            (B False) -> (mem, e3) 
+                            (s) -> (mem, (If (c)(e2)(e3)))
+                            where (mem', c) = eval1 (mem, e1)   -- seria asi?   
+
+
 
