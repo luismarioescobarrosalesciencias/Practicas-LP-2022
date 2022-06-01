@@ -154,3 +154,30 @@ eval1 (mem, Seq e1 e2) = case (e1, e2) of
                                       where (mem', d) = eval1 (mem, e1)  
 eval1 (mem, While e1 e2) = (mem, If (e1) (Seq (e2) (While e1 e2)) (Void))                                      
 
+
+evals :: (Memory , Expr ) -> (Memory , Expr )
+evals (mem, Var x) = (mem, Var x)
+evals (mem, B x) = (mem, B x)
+evals (mem, I x) = (mem, I x)
+evals (mem, e@(Add e1 e2)) = case (e1, e2) of 
+                           ((I x), (I y)) -> (mem, I (x+y))
+                           (s, I y) -> eval1 (mem, e)
+                           (I x, c) -> eval1 (mem, e)
+                           (s, c) -> eval1 (memt, h)
+                                  where (mem1, p) = eval1 (mem, s)
+                                        (mem2, q) = eval1 (mem1, c)
+                                        (memt, h) = eval1 (mem2, Add p q)
+evals (mem, e@(Mul e1 e2)) = case (e1, e2) of 
+                           ((I x), (I y)) -> (mem, I (x*y))
+                           (s, I y) -> eval1 (mem, e)
+                           (I x, c) -> eval1 (mem, e)
+                           (s, c) -> eval1 (memt, h)
+                                  where (mem1, p) = eval1 (mem, s)
+                                        (mem2, q) = eval1 (mem1, c)
+                                        (memt, h) = eval1 (mem2, Mul p q)
+evals (mem, Succ e) = case e of
+                      (I x) -> (mem, I (x+1))
+                      (s) ->  (mem', I (d+1))
+                        where (mem', I d) = evals (mem, s)
+                     
+                           
