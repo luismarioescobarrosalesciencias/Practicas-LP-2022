@@ -140,8 +140,17 @@ eval1 (mem, Eq e1 e2) = case (e1, e2) of
 eval1 (mem, If e1 e2 e3) = case e1 of
                             (B True) -> (mem, e2)
                             (B False) -> (mem, e3) 
-                            (s) -> (mem, (If (c)(e2)(e3)))
+                            (s) -> (mem', (If (c)(e2)(e3)))
                             where (mem', c) = eval1 (mem, e1)   -- seria asi?   
-
-
+eval1 (mem, Let i e1 (Fn x e2)) = case e1 of                    -- i esta bien colocado?
+                                (B e1) -> (mem, (subst (e2) (x, (B e1))))
+                                (I e1) -> (mem, (subst (e2) (x, (I e1))))
+                                (s) -> (mem', (Let i (c)(Fn x e2)))
+                                where (mem', c) = eval1 (mem, e1)
+                                
+eval1 (mem, Seq e1 e2) = case (e1, e2) of
+                               (Void, s) -> (mem, s)
+                               (s , c) -> (mem', Seq (d) (e2))
+                                      where (mem', d) = eval1 (mem, e1)  
+eval1 (mem, While e1 e2) = (mem, If (e1) (Seq (e2) (While e1 e2)) (Void))                                      
 
