@@ -161,23 +161,40 @@ evals (mem, B x) = (mem, B x)
 evals (mem, I x) = (mem, I x)
 evals (mem, e@(Add e1 e2)) = case (e1, e2) of 
                            ((I x), (I y)) -> (mem, I (x+y))
-                           (s, I y) -> eval1 (mem, e)
-                           (I x, c) -> eval1 (mem, e)
                            (s, c) -> eval1 (memt, h)
                                   where (mem1, p) = eval1 (mem, s)
                                         (mem2, q) = eval1 (mem1, c)
                                         (memt, h) = eval1 (mem2, Add p q)
 evals (mem, e@(Mul e1 e2)) = case (e1, e2) of 
                            ((I x), (I y)) -> (mem, I (x*y))
-                           (s, I y) -> eval1 (mem, e)
-                           (I x, c) -> eval1 (mem, e)
                            (s, c) -> eval1 (memt, h)
                                   where (mem1, p) = eval1 (mem, s)
                                         (mem2, q) = eval1 (mem1, c)
                                         (memt, h) = eval1 (mem2, Mul p q)
 evals (mem, Succ e) = case e of
                       (I x) -> (mem, I (x+1))
-                      (s) ->  (mem', I (d+1))
-                        where (mem', I d) = evals (mem, s)
-                     
-                           
+                      (s) ->  eval1 (mem, Succ s)
+evals (mem, Pred e) = case e of
+                      (I x) -> (mem, I (x-1))
+                      (s) ->  eval1 (mem, Pred s)
+evals (mem, e@(And e1 e2)) = case (e1, e2) of 
+                           ((B x), (B y)) -> (mem, B (x&&y))
+                           (s, c) -> eval1 (memt, h)
+                                  where (mem1, p) = eval1 (mem, s)
+                                        (mem2, q) = eval1 (mem1, c)
+                                        (memt, h) = eval1 (mem2, And p q)
+evals (mem, e@(Or e1 e2)) = case (e1, e2) of 
+                           ((B x), (B y)) -> (mem, B (x||y))
+                           (s, c) -> eval1 (memt, h)
+                                  where (mem1, p) = eval1 (mem, s)
+                                        (mem2, q) = eval1 (mem1, c)
+                                        (memt, h) = eval1 (mem2, Or p q)
+evals (mem, Not e) = case e of
+                      (B x) -> (mem, B (not x))
+                      (s) ->  eval1 (mem, Not s)
+evals (mem, Iszero e) = case e of
+                      (I x) -> if x == 0 
+                              then (mem, B True)
+                              else (mem, B False)
+                      (s) ->  eval1 (mem', p)
+                              where (mem', p) = eval1 (mem, s)
