@@ -2,13 +2,7 @@ module Sintax where
 
 type Identifier = String 
     
-
-{--
- -- Sintaxis Practica2
- -- Para su Practica 3 deben extender esta sintaxis
- -- Agregar y eliminar las cosas que sean necesarias segun la descripcion que se
- -- dio en la especificacionde la practica.
- --}
+-- Sintaxis completa
 data Expr = Var Identifier | I Int | B Bool
           | Add Expr Expr | Mul Expr Expr
           | Succ Expr | Pred Expr
@@ -22,17 +16,8 @@ data Expr = Var Identifier | I Int | B Bool
           | L Int
           | Alloc Expr
           | Dref Expr
-          | Assign Expr Expr
+          | Assign Expr
           | Void
           | Seq Expr Expr
           | While Expr Expr
           deriving (Show, Eq)
-
-type Substitution = (Identifier , Expr)
-
-{--
-    Igual deben adecuar las funciones realizas en la practica 1 para ajustarse a esta sintaxis
---}
-
-
-

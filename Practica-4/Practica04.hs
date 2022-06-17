@@ -17,10 +17,6 @@ data Frame = AddFL Expr | AddFR Expr
             | IfF Expr Expr
             | LetM Identifier Expr
             | AppFL Expr | AppFR Expr
-            | AllocF
-            | DrefF
-            | AssignFL Expr | AssignFR Expr
-            | SeqF Expr
             deriving (Eq, Show)
 
 --Definicion de pila de marcos
@@ -63,7 +59,7 @@ eval1 (R (S (MulFR (I v1)) s) m (I v2)) = R s m (I (v1+v2))
 eval1 (E s m (Succ e)) = E (S SuccF s) m e
 eval1 (R (S SuccF s) m (I v)) = R s m (I (v+1))
 --- WHILE
-eval1 (E s m w@(While f e)) = E s m (If f (Seq e w) Void)
+-- ¿Necesario? eval1 (E s m w@(While f e)) = E s m (If f (Seq e w) Void)
 
 {-- 
 Ejemplo evaluacion de un valor en una seq
