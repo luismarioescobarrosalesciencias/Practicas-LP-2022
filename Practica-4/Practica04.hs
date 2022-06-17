@@ -1,8 +1,23 @@
 module Practica04 where 
 import Sintax
 
---Identificador.
-type Identifier = String
+-- Alias para direcciones de memoria.
+type Address = Int
+
+{-- Alias para valores. Aunque por implementacion se podria poner cualquier expresion, se espera solo
+sean valores. --}
+type Value = Expr
+
+type Cell = ( Address , Value )
+
+type Memory = [ Cell ]
+
+--Definicion de pila de marcos
+data Stack = Empty
+           | S Frame Stack
+
+data State = E Stack Memory Expr
+           | R Stack Memory Expr
 
 -- Definicion de marcos
 data Frame = AddFL Expr | AddFR Expr
@@ -15,30 +30,34 @@ data Frame = AddFL Expr | AddFR Expr
             | GtFL Expr | GtFR Expr 
             | EqFL Expr | EqFR Expr
             | IfF Expr Expr
-            | LetM Identifier Expr
+            | LetF Identifier Expr
             | AppFL Expr | AppFR Expr
-            deriving (Eq, Show)
+            deriving (Eq)
 
---Definicion de pila de marcos
-data Stack = Empty
-           | S Frame Stack
-           deriving Show
-
--- Alias para direcciones de memoria.
-type Address = Int
-{-- Alias para valores. Aunque por implementacion se podria poner cualquier expresion, se espera solo
-sean valores. --}
-
-type Value = Expr
-
-type Cell = ( Address , Value )
-
-type Memory = [ Cell ]
-
-data State = E Stack Memory Expr
-           | R Stack Memory Expr
-           | P Stack Memory Expr
-           deriving Show
+instance Show Frame where 
+    show e = case e of 
+        AddFL exp -> "Add( - , " ++ show(exp) ++ " )"
+        AddFR exp -> "Add( " ++ show(exp) ++ " , - )"
+        MulFL exp -> "Mul( - , " ++ show(exp) ++ " )"
+        MulFR exp -> "Mul( " ++ show(exp) ++ " , - )"
+        SuccF -> "Succ( - )"
+        PredF -> "Pred( - )"
+        AndFL exp -> "And( - , " ++ show(exp) ++ " )"
+        AndFR exp -> "And( " ++ show(exp) ++ " , - )"
+        OrFL exp -> "Or( - , " ++ show(exp) ++ " )"
+        OrFR exp -> "Or( " ++ show(exp) ++ " , - )"
+        NotF -> "Not( - )"
+        IszeroF -> "IsZero( - )"
+        LtFL exp -> "Lt( - , " ++ show(exp) ++ " )"
+        LtFR exp -> "Lt( " ++ show(exp) ++ " , - )"
+        GtFL exp -> "Gt( - , " ++ show(exp) ++ " )"
+        GtFR exp -> "Gt( " ++ show(exp) ++ " , - )"
+        EqFL exp -> "Eq( - , " ++ show(exp) ++ " )"
+        EqFR exp -> "Eq( " ++ show(exp) ++ " , - )"
+        (IfF e1 e2) -> "If( - , " ++ show(e1) ++ show(e2) ++ " )"
+     --   LetF ?? 
+        AppFL exp -> "App( - , " ++ show(exp) ++ " )"
+        AppFR exp -> "App( " ++ show(exp) ++ " , - )"
 
 
 -- Ejemplos de la funcion eval1
@@ -60,6 +79,8 @@ eval1 (E s m (Succ e)) = E (S SuccF s) m e
 eval1 (R (S SuccF s) m (I v)) = R s m (I (v+1))
 --- WHILE
 -- ¿Necesario? eval1 (E s m w@(While f e)) = E s m (If f (Seq e w) Void)
+
+
 
 {-- 
 Ejemplo evaluacion de un valor en una seq
